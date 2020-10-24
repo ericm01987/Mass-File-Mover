@@ -38,11 +38,6 @@ const COMDLG_FILTERSPEC c_rgSaveTypes[] =
 #define IDC_WRITEPROPERTIESUSINGHANDLERS        104
 #define IDC_WRITEPROPERTIESWITHOUTUSINGHANDLERS 105
 
-//global variables
-std::wstring fileSourceDir;                        //Source directory path
-std::wstring fileDestinationDir;                  //Target directory path
-
-
 /* File Dialog Event Handler *****************************************************************************************************/
 
 class CDialogEventHandler : public IFileDialogEvents,
@@ -314,8 +309,9 @@ HRESULT _WriteDataToCustomFile(PCWSTR pszFileName)
 /* Common File Dialog Snippets ***************************************************************************************************/
 
 // This code snippet demonstrates how to work with the common file dialog interface
-HRESULT BasicFileOpen()
+std::wstring BasicFileOpen()
 {
+    std::wstring sourceDir;                        //Source directory path
     // CoCreate the File Open Dialog object.
     IFileDialog* pfd = NULL;
     HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
@@ -357,7 +353,7 @@ HRESULT BasicFileOpen()
                                 hr = psiResult->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
                                 if (SUCCEEDED(hr))
                                 {
-                                    fileSourceDir = pszFilePath;
+                                    sourceDir = pszFilePath;
                                     CoTaskMemFree(pszFilePath);
                                 }
                                 psiResult->Release();
@@ -372,11 +368,12 @@ HRESULT BasicFileOpen()
         }
         pfd->Release();
     }
-    return hr;
+    return sourceDir;
 }
 
-HRESULT BasicFileOpen2()
+std::wstring BasicFileOpen2()
 {
+    std::wstring destinationDir;                  //Target directory path
     // CoCreate the File Open Dialog object.
     IFileDialog* pfd = NULL;
     HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
@@ -418,7 +415,7 @@ HRESULT BasicFileOpen2()
                                 hr = psiResult->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
                                 if (SUCCEEDED(hr))
                                 {
-                                    fileDestinationDir = pszFilePath;
+                                    destinationDir = pszFilePath;
                                     CoTaskMemFree(pszFilePath);
                                 }
                                 psiResult->Release();
@@ -433,5 +430,5 @@ HRESULT BasicFileOpen2()
         }
         pfd->Release();
     }
-    return hr;
+    return destinationDir;
 }

@@ -52,6 +52,8 @@ HFONT hFont2;
 HDC staticTextDC;
 std::wstring sourceMaxLengthError;
 std::wstring destinationMaxLengthError;
+std::wstring fileSourceDir;
+std::wstring fileDestinationDir;
 int whtBlk = RADIO_NONE;
 int sourceLength;                               //Holds the length of the source folder textbox
 int destinationLength;                          //Holds the length of the destination folder textbox
@@ -357,8 +359,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             //Child window dialog boxes
         case IDC_BROWSEBUTTON:
             SetWindowText(hwndDirPath, NULL);
-            fileSourceDir.clear();
-            BasicFileOpen();
+            fileSourceDir = BasicFileOpen();
             SetWindowText(hwndDirPath, fileSourceDir.data());
             if (fileDestinationDir.empty() == true)
             {
@@ -369,7 +370,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         case IDC_BROWSEBUTTON2:
             SetWindowText(hwndTargetDirPath, NULL);
             fileDestinationDir.clear();
-            BasicFileOpen2();
+            fileDestinationDir = BasicFileOpen2();
             SetWindowText(hwndTargetDirPath, fileDestinationDir.data());
             if (fileSourceDir.empty() == true)
             {
