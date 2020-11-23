@@ -29,11 +29,33 @@ void MoveFilesNone(HWND mainWnd, bool checkmark)
 {
     fs::current_path(fFileDir);
     int i = 1;                                                      //counter for number at the end of filenames
+    int totalFiles = 0;
     std::wstring targetFile;                                        //the filename after moving
 
     //Checkmark that indicates that the user wants to keep filenames is unchecked
     if (checkmark == false)
     {
+
+        //register number of files in the target directory for error checking
+        for (auto& r : fs::directory_iterator(fTargetDirPath))
+        {
+            if (r.is_directory() == false)
+            {
+                totalFiles++;
+            }
+        }
+        //check for possible accidental selection of large directory
+        if (totalFiles > 5000)
+        {
+            int messageBoxResult = 0;
+            std::wstring warning = L"You are about to move a large number of files! Total number: " + std::to_wstring(totalFiles) + L" ...Are you sure you want to continue?";
+            messageBoxResult = ::MessageBox(mainWnd, &warning[0], L"Warning", MB_YESNO);
+            if (messageBoxResult == 7)
+            {
+                return;
+            }
+        }
+
         for (auto& p : fs::recursive_directory_iterator(fFileDir))
         {
             if (p.is_directory() == false)
@@ -50,12 +72,24 @@ void MoveFilesNone(HWND mainWnd, bool checkmark)
     {
         std::map<std::wstring, int> filenameMap;
         bool duplicateFound = false;
-        //register all files in the target directory for duplicate checking
+        //register all files in the target directory for duplicate and error checking
         for (auto& r : fs::directory_iterator(fTargetDirPath))
         {
             if (r.is_directory() == false)
             {
                 filenameMap[(std::wstring)r.path().filename()] = 1;
+                totalFiles++;
+            }
+        }
+        //check for the possibility of accidentally selecting a large directory
+        if (totalFiles > 5000)
+        {
+            int messageBoxResult = 0;
+            std::wstring warning = L"You are about to move " + std::to_wstring(totalFiles) + L" files. Are you sure you want to continue?";
+            messageBoxResult = ::MessageBox(mainWnd, &warning[0], L"Warning", MB_YESNO);
+            if (messageBoxResult == 7)
+            {
+                return;
             }
         }
         //move files
@@ -119,7 +153,9 @@ void MoveFilesWhite(HWND mainWnd, bool checkmark)
     );
 
     int total = 0;
+    int totalFiles = 0; //the number of files in the source directory
     std::wstring buffer;
+    
 
     //parse the whitelist into strings
     for (int i = 0, extLen = 0; Whitelist[i] != '\0'; i++)
@@ -149,6 +185,27 @@ void MoveFilesWhite(HWND mainWnd, bool checkmark)
     //User wants files renamed
     if (checkmark == false)
     {
+
+        //register number of files in the target directory for error checking
+        for (auto& r : fs::directory_iterator(fTargetDirPath))
+        {
+            if (r.is_directory() == false)
+            {
+                totalFiles++;
+            }
+        }
+        //check for possible accidental selection of large directory
+        if (totalFiles > 5000)
+        {
+            int messageBoxResult = 0;
+            std::wstring warning = L"You are about to move a large number of files! Total number: " + std::to_wstring(totalFiles) + L" ...Are you sure you want to continue?";
+            messageBoxResult = ::MessageBox(mainWnd, &warning[0], L"Warning", MB_YESNO);
+            if (messageBoxResult == 7)
+            {
+                return;
+            }
+        }
+
         int i = 1;                                                      //counter for number at the end of filenames
         for (auto& p : fs::recursive_directory_iterator(fFileDir))
         {
@@ -175,12 +232,24 @@ void MoveFilesWhite(HWND mainWnd, bool checkmark)
     {
         std::map<std::wstring, int> filenameMap;
         bool duplicateFound = false;
-        //register all files in the target directory for duplicate checking
+        //register all files in the target directory for duplicate and error checking
         for (auto& r : fs::directory_iterator(fTargetDirPath))
         {
             if (r.is_directory() == false)
             {
                 filenameMap[(std::wstring)r.path().filename()] = 1;
+                totalFiles++;
+            }
+        }
+        //check for the possibility of accidentally selecting a large directory
+        if (totalFiles > 5000)
+        {
+            int messageBoxResult = 0;
+            std::wstring warning = L"You are about to move " + std::to_wstring(totalFiles) + L" files. Are you sure you want to continue?";
+            messageBoxResult = ::MessageBox(mainWnd, &warning[0], L"Warning", MB_YESNO);
+            if (messageBoxResult == 7)
+            {
+                return;
             }
         }
         //move files
@@ -239,6 +308,7 @@ void MoveFilesBlack(HWND mainWnd, bool checkmark)
     fs::current_path(mainPath);  //set path to path with the ini file
     wchar_t Blacklist[MAX_LENGTH];
     std::vector<std::wstring> extList;
+    int totalFiles = 0;
 
     GetPrivateProfileString(
         L"List",
@@ -280,6 +350,26 @@ void MoveFilesBlack(HWND mainWnd, bool checkmark)
     //User wants files renamed
     if (checkmark == false)
     {
+        //register number of files in the target directory for error checking
+        for (auto& r : fs::directory_iterator(fTargetDirPath))
+        {
+            if (r.is_directory() == false)
+            {
+                totalFiles++;
+            }
+        }
+        //check for possible accidental selection of large directory
+        if (totalFiles > 5000)
+        {
+            int messageBoxResult = 0;
+            std::wstring warning = L"You are about to move a large number of files! Total number: " + std::to_wstring(totalFiles) + L" ...Are you sure you want to continue?";
+            messageBoxResult = ::MessageBox(mainWnd, &warning[0], L"Warning", MB_YESNO);
+            if (messageBoxResult == 7)
+            {
+                return;
+            }
+        }
+
         int i = 1;                                                          //counter for number at the end of filenames
         for (auto& p : fs::recursive_directory_iterator(fFileDir))
         {
@@ -305,14 +395,27 @@ void MoveFilesBlack(HWND mainWnd, bool checkmark)
     {
         std::map<std::wstring, int> filenameMap;
         bool duplicateFound = false;
-        //register all files in the target directory for duplicate checking
+        //register all files in the target directory for duplicate and error checking
         for (auto& r : fs::directory_iterator(fTargetDirPath))
         {
             if (r.is_directory() == false)
             {
                 filenameMap[(std::wstring)r.path().filename()] = 1;
+                totalFiles++;
             }
         }
+        //check for possible accidental selection of large directory
+        if (totalFiles > 5000)
+        {
+            int messageBoxResult = 0;
+            std::wstring warning = L"You are about to move a large number of files! Total number: " + std::to_wstring(totalFiles) + L" ...Are you sure you want to continue?";
+            messageBoxResult = ::MessageBox(mainWnd, &warning[0], L"Warning", MB_YESNO);
+            if (messageBoxResult == 7)
+            {
+                return;
+            }
+        }
+
         //move files
         for (auto& p : fs::recursive_directory_iterator(fFileDir))
         {
